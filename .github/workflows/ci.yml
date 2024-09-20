@@ -166,7 +166,11 @@ jobs:
               BOARD=onecloud \
               BRANCH=${{ matrix.BRANCH }} \
               EXPERT=yes \
-              USE_CCACHE=no
+              USE_CCACHE=no \
+              KERNEL_CONFIGURE=yes \
+              CONFIG_DEBUG_INFO_BTF=y \
+              CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y \
+              CONFIG_DEBUG_INFO_DWARF4=y
           sudo chown $(id -u):$(id -g) -R output/
 
       - name: Upload artifacts
@@ -241,7 +245,7 @@ jobs:
               BOARD=onecloud \
               BRANCH=${{ matrix.BRANCH }} \
               RELEASE=${{ matrix.RELEASE }} \
-              KERNEL_CONFIGURE=no \
+              KERNEL_CONFIGURE=yes \
               BUILD_MINIMAL=${{ matrix.TYPE == 'minimal' && 'yes' || 'no' }} \
               BUILD_DESKTOP=${{ matrix.TYPE == 'desktop' && 'yes' || 'no' }} \
               DESKTOP_ENVIRONMENT=${{ matrix.DESKTOP_ENVIRONMENT }} \
@@ -251,7 +255,10 @@ jobs:
               SKIP_EXTERNAL_TOOLCHAINS=yes \
               CLEAN_LEVEL= \
               USE_CCACHE=no \
-              COMPRESS_OUTPUTIMAGE=img
+              COMPRESS_OUTPUTIMAGE=img \
+              CONFIG_DEBUG_INFO_BTF=y \
+              CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y \
+              CONFIG_DEBUG_INFO_DWARF4=y
           sudo chown $(id -u):$(id -g) -R output/
 
       - name: Install Dependents
