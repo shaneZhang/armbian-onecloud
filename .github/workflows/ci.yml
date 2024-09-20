@@ -25,7 +25,7 @@ permissions:
 jobs:
   prepare:
     name: Prepare
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       env: ${{ steps.get.outputs.env }}
     steps:
@@ -124,7 +124,7 @@ jobs:
   build-debs:
     name: Build ${{ matrix.BRANCH }}
     needs: prepare
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -185,7 +185,7 @@ jobs:
   build:
     name: Build ${{ matrix.RELEASE }}-${{ matrix.BRANCH }}-${{ matrix.TYPE == 'desktop' && matrix.DESKTOP_ENVIRONMENT || matrix.TYPE }}
     needs: [ prepare, build-debs ]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -193,13 +193,10 @@ jobs:
           - edge
           - current
         RELEASE:
-          # - focal # Ubuntu 20.04 LTS
           - jammy # Ubuntu 22.04 LTS
-          # - lunar # Ubuntu 23.04
-          # - buster # Debian 10
+          - noble # Ubuntu 24.04 LTS
           - bullseye # Debian 11
           - bookworm # Debian 12
-          - sid # Debian unstable
         TYPE:
           - minimal
           - cli
