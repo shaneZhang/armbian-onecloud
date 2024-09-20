@@ -167,7 +167,7 @@ jobs:
               BRANCH=${{ matrix.BRANCH }} \
               EXPERT=yes \
               USE_CCACHE=no \
-              kernel-config=yes \
+              KERNEL_CONFIGURE=no \
               CONFIG_DEBUG_INFO_BTF=y \
               CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y \
               CONFIG_DEBUG_INFO_DWARF4=y
@@ -245,7 +245,7 @@ jobs:
               BOARD=onecloud \
               BRANCH=${{ matrix.BRANCH }} \
               RELEASE=${{ matrix.RELEASE }} \
-              kernel-config=yes \
+              KERNEL_CONFIGURE=no \
               BUILD_MINIMAL=${{ matrix.TYPE == 'minimal' && 'yes' || 'no' }} \
               BUILD_DESKTOP=${{ matrix.TYPE == 'desktop' && 'yes' || 'no' }} \
               DESKTOP_ENVIRONMENT=${{ matrix.DESKTOP_ENVIRONMENT }} \
