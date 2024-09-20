@@ -160,6 +160,29 @@ jobs:
         run: |
           # Don't update remote cache
           export GITHUB_ACTIONS=false
+          # Remove disabling DEBUG_INFO.
+          sed -i 's/run_kernel_make olddefconfig/run_kernel_make KCONFIG_ALLCONFIG=.config alldefconfig/g' lib/functions/compilation/kernel-config.sh
+          sed -i '/kernel_config_set_n DEBUG_INFO/d' lib/functions/compilation/armbian-kernel.sh
+          # Trip modulues debug info.
+          sed -i 's/run_kernel_make_long_running/run_kernel_make_long_running INSTALL_MOD_STRIP=1/g' lib/functions/compilation/kernel.sh
+
+          # Enable BTF.
+          sed -i '/CONFIG_DEBUG_INFO/d;/CONFIG_RING_BUFFER/d;/CONFIG_TRACING/d;/CONFIG_STACKTRACE/d;/CONFIG_NOP_TRACER/d;/CONFIG_BINARY_PRINTF/d;/CONFIG_EVENT_TRACING/d;/CONFIG_TRACE_CLOCK/d;/CONFIG_TASKS_RCU/d' config/kernel/linux-meson-${{ matrix.BRANCH }}.config
+          echo "CONFIG_DEBUG_INFO=y
+          CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y
+          CONFIG_DEBUG_INFO_COMPRESSED_ZLIB=y
+          CONFIG_DEBUG_INFO_BTF=y
+          CONFIG_KPROBE_EVENTS=y
+          CONFIG_BPF_EVENTS=y
+          CONFIG_RING_BUFFER=y
+          CONFIG_TRACING=y
+          CONFIG_STACKTRACE=y
+          CONFIG_NOP_TRACER=y
+          CONFIG_BINARY_PRINTF=y
+          CONFIG_EVENT_TRACING=y
+          CONFIG_TRACE_CLOCK=y
+          CONFIG_TASKS_RCU=y" >> config/kernel/linux-meson-${{ matrix.BRANCH }}.config
+          
           sudo --preserve-env \
             ./compile.sh kernel \
               ALLOW_ROOT=yes \
@@ -167,10 +190,7 @@ jobs:
               BRANCH=${{ matrix.BRANCH }} \
               EXPERT=yes \
               USE_CCACHE=no \
-              KERNEL_CONFIGURE=no \
-              CONFIG_DEBUG_INFO_BTF=y \
-              CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y \
-              CONFIG_DEBUG_INFO_DWARF4=y
+              KERNEL_CONFIGURE=no
           sudo chown $(id -u):$(id -g) -R output/
 
       - name: Upload artifacts
@@ -197,12 +217,9 @@ jobs:
           - edge
           - current
         RELEASE:
-          - jammy # Ubuntu 22.04 LTS
           - noble # Ubuntu 24.04 LTS
-          - bullseye # Debian 11
           - bookworm # Debian 12
         TYPE:
-          - minimal
           - cli
 
     steps:
@@ -239,6 +256,29 @@ jobs:
         run: |
           # Don't update remote cache
           export GITHUB_ACTIONS=false
+          # Remove disabling DEBUG_INFO.
+          sed -i 's/run_kernel_make olddefconfig/run_kernel_make KCONFIG_ALLCONFIG=.config alldefconfig/g' lib/functions/compilation/kernel-config.sh
+          sed -i '/kernel_config_set_n DEBUG_INFO/d' lib/functions/compilation/armbian-kernel.sh
+          # Trip modulues debug info.
+          sed -i 's/run_kernel_make_long_running/run_kernel_make_long_running INSTALL_MOD_STRIP=1/g' lib/functions/compilation/kernel.sh
+
+          # Enable BTF.
+          sed -i '/CONFIG_DEBUG_INFO/d;/CONFIG_RING_BUFFER/d;/CONFIG_TRACING/d;/CONFIG_STACKTRACE/d;/CONFIG_NOP_TRACER/d;/CONFIG_BINARY_PRINTF/d;/CONFIG_EVENT_TRACING/d;/CONFIG_TRACE_CLOCK/d;/CONFIG_TASKS_RCU/d' config/kernel/linux-meson-${{ matrix.BRANCH }}.config
+          echo "CONFIG_DEBUG_INFO=y
+          CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y
+          CONFIG_DEBUG_INFO_COMPRESSED_ZLIB=y
+          CONFIG_DEBUG_INFO_BTF=y
+          CONFIG_KPROBE_EVENTS=y
+          CONFIG_BPF_EVENTS=y
+          CONFIG_RING_BUFFER=y
+          CONFIG_TRACING=y
+          CONFIG_STACKTRACE=y
+          CONFIG_NOP_TRACER=y
+          CONFIG_BINARY_PRINTF=y
+          CONFIG_EVENT_TRACING=y
+          CONFIG_TRACE_CLOCK=y
+          CONFIG_TASKS_RCU=y" >> config/kernel/linux-meson-${{ matrix.BRANCH }}.config
+          
           sudo --preserve-env \
             ./compile.sh build \
               ALLOW_ROOT=yes \
@@ -248,17 +288,11 @@ jobs:
               KERNEL_CONFIGURE=no \
               BUILD_MINIMAL=${{ matrix.TYPE == 'minimal' && 'yes' || 'no' }} \
               BUILD_DESKTOP=${{ matrix.TYPE == 'desktop' && 'yes' || 'no' }} \
-              DESKTOP_ENVIRONMENT=${{ matrix.DESKTOP_ENVIRONMENT }} \
-              DESKTOP_ENVIRONMENT_CONFIG_NAME=${{ matrix.DESKTOP_ENVIRONMENT_CONFIG_NAME }} \
-              DESKTOP_APPGROUPS_SELECTED=${{ matrix.DESKTOP_APPGROUPS_SELECTED }} \
               EXPERT=yes \
               SKIP_EXTERNAL_TOOLCHAINS=yes \
               CLEAN_LEVEL= \
               USE_CCACHE=no \
-              COMPRESS_OUTPUTIMAGE=img \
-              CONFIG_DEBUG_INFO_BTF=y \
-              CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y \
-              CONFIG_DEBUG_INFO_DWARF4=y
+              COMPRESS_OUTPUTIMAGE=img
           sudo chown $(id -u):$(id -g) -R output/
 
       - name: Install Dependents
